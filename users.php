@@ -15,15 +15,22 @@ class UserController extends Controller
         $users=$res['users'];
         foreach ($users as $user) {
     	try {
-    		if ($user['name'] && $user['login'] && $user['email'] && $user['password'] && strlen($user['name']) >= 10)
-    			DB::table('users')->where('id', $user['id'])->upsert([ //lepiej byłboby pracować na modelu usera
+    		if ($user['name'] && $user['login'] && $user['email'] && $user['password'] && strlen($user['name']) >= 10){
+    			DB::table('users')->upsert([ //lepiej byłboby pracować na modelu usera
     				'name' => $user['name'],
     				'login' => $user['login'],
     				'email' => $user['email'],
     				'password' => md5($user['password'])
 
     			],[ 'email'], ['name', 'login', 'email', 'password']);
+            }
+            else{
+
+                return Redirect::back()->withErrors(['error', 'We couldn\'t update user. ']);
+            }
     	} catch (\Throwable $e) {
+
+
     		return Redirect::back()->withErrors(['error', 'We couldn\'t update user: ' . $e->getMessage()]);
     	}
          }
@@ -37,7 +44,7 @@ class UserController extends Controller
     foreach ($users as $user) {
 
         try {
-    		if ($user['name'] && $user['login'] && $user['email'] && $user['password'] && strlen($user['name']) >= 10)
+    		if ($user['name'] && $user['login'] && $user['email'] && $user['password'] && strlen($user['name']) >= 10){
 
     			DB::table('users')->upsert([  //lepiej byłboby pracować na modelu usera
     				'name' => $user['name'],
@@ -45,7 +52,10 @@ class UserController extends Controller
     				'email' => $user['email'],
     				'password' => md5($user['password'])
                 ],[ 'email'], ['name', 'login', 'email', 'password']);
-
+            }
+            else{
+                return Redirect::back()->withErrors(['error', 'We couldn\'t store user. ']);
+            }
         } catch (\Throwable $e) {
             return Redirect::back()->withErrors(['error', ['We couldn\'t store user: ' . $e->getMessage()]]);
         }
